@@ -2,6 +2,7 @@ package ua.zp.tirastesttask.data.network.response
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import ua.zp.tirastesttask.data.models.WeatherDataCurrentDay
 
 @Parcelize
 data class WeatherResponse(
@@ -9,7 +10,20 @@ data class WeatherResponse(
     val current: Current,
     val forecast: Forecast,
     val alerts: Alerts
-): Parcelable
+): Parcelable{
+    fun toWeatherDataCurrentDay():WeatherDataCurrentDay =
+        WeatherDataCurrentDay(
+            localTime = location.localtime,
+            temperature = current.temp_c,
+            cityName = location.name,
+            humidity = current.humidity,
+            feelsLike = current.feelslike_c,
+            icon = current.condition.icon,
+            lat = location.lat,
+            lon = location.lon,
+            windSpeed = current.wind_kph
+        )
+}
 @Parcelize
 data class Location(
     val name: String,
@@ -37,7 +51,7 @@ data class Current(
     val pressure_in: Double,
     val precip_mm: Double,
     val precip_in: Double,
-    val humidity: Int,
+    val humidity: Double,
     val cloud: Int,
     val feelslike_c: Double,
     val feelslike_f: Double,
