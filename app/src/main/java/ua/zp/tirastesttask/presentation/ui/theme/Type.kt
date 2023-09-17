@@ -1,4 +1,4 @@
-package ua.zp.tirastesttask.ui.theme
+package ua.zp.tirastesttask.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ua.zp.tirastesttask.repository.IWeatherRepository
-import ua.zp.tirastesttask.repository.WeatherRepository
+import ua.zp.tirastesttask.data.repository.WeatherRepositoryImpl
+import ua.zp.tirastesttask.domain.repository.IWeatherRepository
 import javax.inject.Singleton
 
 @Module
@@ -14,6 +14,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindWeatherRepository(
-        weatherRepository:WeatherRepository
+        weatherRepository: WeatherRepositoryImpl
     ): IWeatherRepository
 }

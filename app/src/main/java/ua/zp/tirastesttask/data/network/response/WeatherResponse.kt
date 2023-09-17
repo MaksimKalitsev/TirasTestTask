@@ -2,7 +2,8 @@ package ua.zp.tirastesttask.data.network.response
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import ua.zp.tirastesttask.data.models.WeatherDataCurrentDay
+import ua.zp.tirastesttask.data.models.ForecastData
+import ua.zp.tirastesttask.data.models.WeatherData
 
 @Parcelize
 data class WeatherResponse(
@@ -10,9 +11,9 @@ data class WeatherResponse(
     val current: Current,
     val forecast: Forecast,
     val alerts: Alerts
-): Parcelable{
-    fun toWeatherDataCurrentDay():WeatherDataCurrentDay =
-        WeatherDataCurrentDay(
+) : Parcelable {
+    fun toWeatherData(): WeatherData =
+        WeatherData(
             localTime = location.localtime,
             temperature = current.temp_c,
             cityName = location.name,
@@ -23,7 +24,9 @@ data class WeatherResponse(
             lon = location.lon,
             windSpeed = current.wind_kph
         )
+
 }
+
 @Parcelize
 data class Location(
     val name: String,
@@ -34,7 +37,8 @@ data class Location(
     val tz_id: String,
     val localtime_epoch: Long,
     val localtime: String
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Current(
     val last_updated_epoch: Long,
@@ -60,17 +64,22 @@ data class Current(
     val uv: Double,
     val gust_mph: Double,
     val gust_kph: Double
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Condition(
     val text: String,
     val icon: String,
     val code: Int
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Forecast(
     val forecastday: List<ForecastDay>
-): Parcelable
+) : Parcelable {
+
+}
+
 @Parcelize
 data class ForecastDay(
     val date: String,
@@ -78,7 +87,16 @@ data class ForecastDay(
     val day: Day,
     val astro: Astro,
     val hour: List<Hour>
-): Parcelable
+) : Parcelable {
+    fun toForecastData(): ForecastData =
+        ForecastData(
+            date = date,
+            mintemp_c = day.mintemp_c,
+            maxtemp_c = day.mintemp_c,
+            icon = day.condition.icon
+        )
+}
+
 @Parcelize
 data class Day(
     val maxtemp_c: Double,
@@ -101,7 +119,8 @@ data class Day(
     val daily_chance_of_snow: Int,
     val condition: Condition,
     val uv: Double
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Astro(
     val sunrise: String,
@@ -112,7 +131,8 @@ data class Astro(
     val moon_illumination: String,
     val is_moon_up: Int,
     val is_sun_up: Int
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Hour(
     val time_epoch: Long,
@@ -148,11 +168,13 @@ data class Hour(
     val gust_mph: Double,
     val gust_kph: Double,
     val uv: Double
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Alerts(
     val alert: List<Alert>
-): Parcelable
+) : Parcelable
+
 @Parcelize
 data class Alert(
     val sender_name: String,
@@ -160,5 +182,5 @@ data class Alert(
     val start: Long,
     val end: Long,
     val description: String
-): Parcelable
+) : Parcelable
 

@@ -1,4 +1,4 @@
-package ua.zp.tirastesttask.ui.theme
+package ua.zp.tirastesttask.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
