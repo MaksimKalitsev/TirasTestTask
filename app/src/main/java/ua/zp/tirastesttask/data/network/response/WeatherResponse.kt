@@ -22,7 +22,9 @@ data class WeatherResponse(
             icon = current.condition.icon,
             lat = location.lat,
             lon = location.lon,
-            windSpeed = current.wind_kph
+            windSpeed = current.wind_kph,
+            conditional = current.condition.text,
+            pressure = current.pressure_mb
         )
 
 }

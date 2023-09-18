@@ -11,6 +11,8 @@ data class WeatherData(
     val windSpeed: Double,
     val cityName: String,
     val icon: String,
+    val conditional: String,
+    val pressure: Double,
     val lat: Double,
     val lon: Double,
     val feelsLike: Double

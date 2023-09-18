@@ -6,32 +6,40 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import ua.zp.tirastesttask.Config
 import ua.zp.tirastesttask.data.models.ForecastData
 import ua.zp.tirastesttask.data.models.WeatherData
-import ua.zp.tirastesttask.data.repository.WeatherRepositoryImpl
+import ua.zp.tirastesttask.domain.location.LocationTracker
 import ua.zp.tirastesttask.domain.repository.IWeatherRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class WeatherViewModel @Inject constructor(private val repository: IWeatherRepository) : ViewModel() {
+class WeatherViewModel @Inject constructor(
+    private val repository: IWeatherRepository,
+    private val locationTracker: LocationTracker
+) : ViewModel() {
+
 
     private val _currentWeather = MutableLiveData<Result<WeatherData>>()
     val currentWeather: LiveData<Result<WeatherData>> = _currentWeather
 
-    private val _forecastWeather = MutableLiveData<Result<List<ForecastData>>>()
-    val forecastWeather: LiveData<Result<List<ForecastData>>> = _forecastWeather
 
-    fun getCurrentWeather(apiKey: String, location: String) {
-        viewModelScope.launch {
-            val result = repository.getCurrentWeatherDay(apiKey, location)
-            _currentWeather.value = result
-        }
-    }
+    private val _forecast = MutableLiveData<Result<List<ForecastData>>>()
+    val forecast: LiveData<Result<List<ForecastData>>> = _forecast
 
-    fun getWeatherForecast(apiKey: String, location: String, countDays: Int) {
-        viewModelScope.launch {
-            val result = repository.getForecast(apiKey, location, countDays)
-            _forecastWeather.value = result
+    fun fetchWeatherForCurrentLocation() = viewModelScope.launch {
+        val location = locationTracker.getCurrentLocation()
+        if (location != null) {
+            val locationString = "${location.latitude},${location.longitude}"
+
+            val currentWeatherResult = repository.getCurrentWeatherDay(Config.API_KEY, locationString)
+            _currentWeather.value = currentWeatherResult
+
+            val forecastResult = repository.getForecast(Config.API_KEY, locationString, 3)
+            _forecast.value = forecastResult
+        } else {
+            _currentWeather.value = Result.failure(Exception("Unable to get location"))
+            _forecast.value = Result.failure(Exception("Unable to get location"))
         }
     }
 }

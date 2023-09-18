@@ -22,9 +22,5 @@ abstract class LocationModule {
     @Singleton
     abstract fun bindLocationTracker(defaultLocationTracker: DefaultLocationTracker): LocationTracker
 
-    @Provides
-    @Singleton
-    fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(app)
-    }
+
 }

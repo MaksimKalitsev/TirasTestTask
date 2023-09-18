@@ -1,5 +1,6 @@
 package ua.zp.tirastesttask.data.repository
 
+import ua.zp.tirastesttask.Config
 import ua.zp.tirastesttask.data.models.ForecastData
 import ua.zp.tirastesttask.data.models.WeatherData
 import ua.zp.tirastesttask.data.network.Api
