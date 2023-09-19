@@ -94,8 +94,9 @@ data class ForecastDay(
         ForecastData(
             date = date,
             mintemp_c = day.mintemp_c,
-            maxtemp_c = day.mintemp_c,
-            icon = day.condition.icon
+            maxtemp_c = day.maxtemp_c,
+            icon = day.condition.icon,
+            conditional = day.condition.text
         )
 }
 

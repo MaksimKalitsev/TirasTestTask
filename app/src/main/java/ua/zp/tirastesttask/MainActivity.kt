@@ -11,10 +11,13 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import ua.zp.tirastesttask.presentation.ForecastCard
 import ua.zp.tirastesttask.presentation.WeatherCard
 import ua.zp.tirastesttask.presentation.WeatherViewModel
 import ua.zp.tirastesttask.presentation.ui.theme.DarkBlue
@@ -39,7 +42,7 @@ class MainActivity : ComponentActivity() {
             if (hasFineLocation && hasCoarseLocation) {
                 viewModel.fetchWeatherForCurrentLocation()
             } else {
-                Toast.makeText(this, "Дозволи на місцезнаходження не надані", Toast.LENGTH_SHORT)
+                Toast.makeText(this, "No access permissions", Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -69,12 +72,32 @@ class MainActivity : ComponentActivity() {
                             )
 
                             result.isFailure -> {
-                                // TODO: Відобразіть повідомлення про помилку або віджет
+
                             }
                         }
                     }
+                    forecastResult?.let { result ->
+                        when {
+                            result.isSuccess -> {
+                                val forecastDataList = result.getOrNull()
+                                if (!forecastDataList.isNullOrEmpty()) {
+                                    LazyColumn {
+                                        items(forecastDataList) { forecastData ->
+                                            ForecastCard(
+                                                data = forecastData,
+                                                backgroundColor = DeepBlue
+                                            )
+                                        }
 
-                    // Тут можна також відобразити `forecastResult`, якщо ви маєте віджет для відображення прогнозу
+                                    }
+                                }
+                            }
+
+                            result.isFailure -> {
+
+                            }
+                        }
+                    }
                 }
             }
         }

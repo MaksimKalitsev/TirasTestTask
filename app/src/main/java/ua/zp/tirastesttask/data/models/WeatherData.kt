@@ -23,7 +23,8 @@ data class ForecastData(
     val date: String,
     val maxtemp_c: Double,
     val mintemp_c: Double,
-    val icon: String
+    val icon: String,
+    val conditional: String
 ): Parcelable
 
 
