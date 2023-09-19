@@ -2,7 +2,8 @@ package ua.zp.tirastesttask.data.network.response
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import ua.zp.tirastesttask.data.models.ForecastData
+import ua.zp.tirastesttask.data.models.ForecastDayData
+import ua.zp.tirastesttask.data.models.ForecastHourData
 import ua.zp.tirastesttask.data.models.WeatherData
 
 @Parcelize
@@ -23,7 +24,7 @@ data class WeatherResponse(
             lat = location.lat,
             lon = location.lon,
             windSpeed = current.wind_kph,
-            conditional = current.condition.text,
+            condition = current.condition.text,
             pressure = current.pressure_mb
         )
 
@@ -90,13 +91,14 @@ data class ForecastDay(
     val astro: Astro,
     val hour: List<Hour>
 ) : Parcelable {
-    fun toForecastData(): ForecastData =
-        ForecastData(
+    fun toForecastData(): ForecastDayData =
+        ForecastDayData(
             date = date,
             mintemp_c = day.mintemp_c,
             maxtemp_c = day.maxtemp_c,
             icon = day.condition.icon,
-            conditional = day.condition.text
+            condition = day.condition.text,
+            hour = hour.map { it.toForecastHourData() }
         )
 }
 
@@ -152,7 +154,7 @@ data class Hour(
     val pressure_in: Double,
     val precip_mm: Double,
     val precip_in: Double,
-    val humidity: Int,
+    val humidity: Double,
     val cloud: Int,
     val feelslike_c: Double,
     val feelslike_f: Double,
@@ -171,7 +173,18 @@ data class Hour(
     val gust_mph: Double,
     val gust_kph: Double,
     val uv: Double
-) : Parcelable
+) : Parcelable{
+    fun toForecastHourData():ForecastHourData =
+        ForecastHourData(
+            time = time,
+            icon = condition.icon,
+            humidity = humidity,
+            pressure = pressure_mb,
+            windSpeed = wind_kph,
+            condition = condition.text,
+            temperature = temp_c
+        )
+}
 
 @Parcelize
 data class Alerts(

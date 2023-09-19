@@ -1,6 +1,6 @@
 package ua.zp.tirastesttask.data.repository
 
-import ua.zp.tirastesttask.data.models.ForecastData
+import ua.zp.tirastesttask.data.models.ForecastDayData
 import ua.zp.tirastesttask.data.models.WeatherData
 import ua.zp.tirastesttask.data.network.Api
 import ua.zp.tirastesttask.domain.repository.IWeatherRepository
@@ -14,7 +14,7 @@ class WeatherRepositoryImpl @Inject constructor(
         apiKey: String,
         location: String,
         countDays: Int
-    ): Result<List<ForecastData>> = try {
+    ): Result<List<ForecastDayData>> = try {
         val weatherResponse =
             api.getWeatherForecast(apiKey, location, countDays)
         val weatherForecastList = weatherResponse.forecast.forecastday.map { it.toForecastData() }

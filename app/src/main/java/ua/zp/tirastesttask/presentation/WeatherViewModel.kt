@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.zp.tirastesttask.Config
-import ua.zp.tirastesttask.data.models.ForecastData
+import ua.zp.tirastesttask.data.models.ForecastDayData
 import ua.zp.tirastesttask.data.models.WeatherData
 import ua.zp.tirastesttask.domain.location.LocationTracker
 import ua.zp.tirastesttask.domain.repository.IWeatherRepository
@@ -24,8 +24,8 @@ class WeatherViewModel @Inject constructor(
     val currentWeather: LiveData<Result<WeatherData>> = _currentWeather
 
 
-    private val _forecast = MutableLiveData<Result<List<ForecastData>>>()
-    val forecast: LiveData<Result<List<ForecastData>>> = _forecast
+    private val _forecast = MutableLiveData<Result<List<ForecastDayData>>>()
+    val forecast: LiveData<Result<List<ForecastDayData>>> = _forecast
 
     fun fetchWeatherForCurrentLocation() = viewModelScope.launch {
         val location = locationTracker.getCurrentLocation()

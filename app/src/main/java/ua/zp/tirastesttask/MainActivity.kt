@@ -88,7 +88,6 @@ class MainActivity : ComponentActivity() {
                                                 backgroundColor = DeepBlue
                                             )
                                         }
-
                                     }
                                 }
                             }

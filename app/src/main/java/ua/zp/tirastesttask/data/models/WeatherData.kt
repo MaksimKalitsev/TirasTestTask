@@ -11,20 +11,32 @@ data class WeatherData(
     val windSpeed: Double,
     val cityName: String,
     val icon: String,
-    val conditional: String,
+    val condition: String,
     val pressure: Double,
     val lat: Double,
     val lon: Double,
     val feelsLike: Double
-): Parcelable
+) : Parcelable
 
 @Parcelize
-data class ForecastData(
+data class ForecastDayData(
     val date: String,
     val maxtemp_c: Double,
     val mintemp_c: Double,
     val icon: String,
-    val conditional: String
-): Parcelable
+    val condition: String,
+    val hour: List<ForecastHourData>
+) : Parcelable
+
+@Parcelize
+data class ForecastHourData(
+    val time: String,
+    val temperature: Double,
+    val icon: String,
+    val condition: String,
+    val windSpeed: Double,
+    val pressure: Double,
+    val humidity: Double
+) : Parcelable
 
 
