@@ -2,6 +2,7 @@ package ua.zp.tirastesttask.presentation
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -24,7 +25,7 @@ fun WeatherDataDisplay(
     iconTint: Color = Color.White
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

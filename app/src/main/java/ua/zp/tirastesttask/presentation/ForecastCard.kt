@@ -1,8 +1,10 @@
 package ua.zp.tirastesttask.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,22 +22,18 @@ import coil.compose.AsyncImage
 import ua.zp.tirastesttask.data.models.ForecastDayData
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForecastCard(
     data: ForecastDayData,
     backgroundColor: Color,
+    onClick:()->Unit,
     modifier: Modifier = Modifier
 ) {
-    val expended = remember {
-        mutableStateOf(false)
-    }
-
     Card(
-        onClick = { expended.value = !expended.value },
         colors = CardDefaults.cardColors(backgroundColor),
         modifier = modifier
             .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+            .clickable(onClick = onClick)
 
     ) {
             ConstraintLayout(
@@ -68,7 +66,7 @@ fun ForecastCard(
                     model = "https:${data.icon}",
                     contentDescription = null,
                     modifier = modifier
-                        .width(100.dp)
+                        .size(64.dp)
                         .constrainAs(image) {
                             top.linkTo(parent.top)
                             end.linkTo(columnSecond.start)
