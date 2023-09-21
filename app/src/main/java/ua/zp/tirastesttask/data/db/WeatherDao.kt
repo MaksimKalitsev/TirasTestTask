@@ -6,15 +6,23 @@ import androidx.room.Query
 
 @Dao
 interface WeatherDao {
+    @Query("SELECT * FROM weather_data")
+    suspend fun getAllWeatherData(): List<WeatherDataEntity>
+
+    @Insert
+    suspend fun insertWeatherData(weatherData: WeatherDataEntity)
+
     @Query("SELECT * FROM forecast_day")
-    fun getAllForecastDays(): List<ForecastDayEntity>
-
-    @Query("SELECT * FROM forecast_hour WHERE dayId = :dayId")
-    fun getForecastHoursForDay(dayId: Long): List<ForecastHourEntity>
+    suspend fun getAllForecastDays(): List<ForecastDayEntity>
 
     @Insert
-    fun insertForecastDay(forecastDay: ForecastDayEntity)
+    suspend fun insertForecastDay(forecastDay: ForecastDayEntity)
+
+    @Query("SELECT * FROM forecast_hour")
+    suspend fun getAllForecastHours(): List<ForecastHourEntity>
 
     @Insert
-    fun insertForecastHours(forecastHours: List<ForecastHourEntity>)
+    suspend fun insertForecastHour(forecastHour: ForecastHourEntity)
+
+
 }
