@@ -19,6 +19,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.zp.tirastesttask.Config
 import ua.zp.tirastesttask.data.db.AppDatabase
+import ua.zp.tirastesttask.data.db.WeatherDao
 import ua.zp.tirastesttask.data.network.Api
 import javax.inject.Singleton
 
@@ -78,4 +79,10 @@ class NetworkModule {
             "weather.db"
         ).build()
     }
+    @Provides
+    @Singleton
+    fun provideWeatherDao(appDatabase: AppDatabase): WeatherDao {
+        return appDatabase.weatherDao()
+    }
+
 }

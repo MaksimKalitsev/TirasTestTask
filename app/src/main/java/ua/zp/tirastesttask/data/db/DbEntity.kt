@@ -9,7 +9,7 @@ import ua.zp.tirastesttask.data.models.WeatherData
 
 @Entity(tableName = "weather_data")
 data class WeatherDataEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey()
     val localTime: String,
     val temperature: Double,
     val humidity: Double,
@@ -22,7 +22,7 @@ data class WeatherDataEntity(
     val lon: Double,
     val feelsLike: Double
 ) {
-    fun toDbWeatherData(): WeatherData =
+    fun toWeatherData(): WeatherData =
         WeatherData(
             temperature = temperature,
             localTime = localTime,
@@ -40,22 +40,21 @@ data class WeatherDataEntity(
 
 @Entity(tableName = "forecast_day")
 data class ForecastDayEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey()
     val date: String,
     val maxtemp_c: Double,
     val mintemp_c: Double,
     val icon: String,
     val condition: String,
-    val cityName: String
 ) {
-    fun toDbForecastDay(forecastHours: List<ForecastHourEntity>): ForecastDayData =
+    fun toForecastDay(forecastHours: List<ForecastHourEntity>): ForecastDayData =
         ForecastDayData(
             date = date,
             maxtemp_c = maxtemp_c,
             mintemp_c = mintemp_c,
             icon = icon,
             condition = condition,
-            hour = forecastHours.map { it.toDbForecastHourData() }
+            hour = forecastHours.map { it.toForecastHourData() }
         )
 }
 
@@ -63,13 +62,13 @@ data class ForecastDayEntity(
     tableName = "forecast_hour",
     foreignKeys = [ForeignKey(
         entity = ForecastDayEntity::class,
-        parentColumns = ["id"],
+        parentColumns = ["date"],
         childColumns = ["dayId"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class ForecastHourEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey()
     val time: String,
     val temperature: Double,
     val icon: String,
@@ -77,9 +76,9 @@ data class ForecastHourEntity(
     val windSpeed: Double,
     val pressure: Double,
     val humidity: Double,
-    val dayId: Long
+    val dayId: String
 ) {
-    fun toDbForecastHourData(): ForecastHourData =
+    fun toForecastHourData(): ForecastHourData =
         ForecastHourData(
             time = time,
             temperature = temperature,

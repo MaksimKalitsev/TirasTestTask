@@ -10,8 +10,7 @@ import ua.zp.tirastesttask.data.models.WeatherData
 data class WeatherResponse(
     val location: Location,
     val current: Current,
-    val forecast: Forecast,
-    val alerts: Alerts
+    val forecast: Forecast
 ) : Parcelable {
     fun toWeatherData(): WeatherData =
         WeatherData(
@@ -186,17 +185,4 @@ data class Hour(
         )
 }
 
-@Parcelize
-data class Alerts(
-    val alert: List<Alert>
-) : Parcelable
-
-@Parcelize
-data class Alert(
-    val sender_name: String,
-    val event: String,
-    val start: Long,
-    val end: Long,
-    val description: String
-) : Parcelable
 

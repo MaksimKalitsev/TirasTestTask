@@ -1,12 +1,11 @@
 package ua.zp.tirastesttask.domain.repository
 
-import androidx.room.Insert
-import androidx.room.Query
-import ua.zp.tirastesttask.data.db.ForecastDayEntity
 import ua.zp.tirastesttask.data.db.ForecastHourEntity
 import ua.zp.tirastesttask.data.db.WeatherDataEntity
 import ua.zp.tirastesttask.data.models.ForecastDayData
+import ua.zp.tirastesttask.data.models.ForecastHourData
 import ua.zp.tirastesttask.data.models.WeatherData
+
 
 interface IWeatherRepository {
     suspend fun getForecast(
@@ -19,12 +18,16 @@ interface IWeatherRepository {
         location: String
     ): Result<WeatherData>
 
-    suspend fun getAllWeatherData(): List<WeatherDataEntity>
-    suspend fun insertWeatherData(weatherData: WeatherDataEntity)
-    suspend fun getAllForecastDays(): List<ForecastDayEntity>
-    suspend fun insertForecastDay(forecastDay: ForecastDayEntity)
-    suspend fun getAllForecastHours(): List<ForecastHourEntity>
-    suspend fun insertForecastHour(forecastHour: ForecastHourEntity)
+    suspend fun getAllWeatherData(): List<WeatherData>
+    suspend fun insertWeatherData(weatherData: WeatherData)
+    suspend fun getAllForecastDays(): List<ForecastDayData>
+    suspend fun insertForecastDay(forecastDay: ForecastDayData)
+    suspend fun getAllForecastHours(): List<ForecastHourData>
+    suspend fun insertForecastHour(forecastHour: ForecastHourData, dayId: String)
+    suspend fun clearForecastDayTable()
+    suspend fun clearWeatherDataTable()
+    suspend fun clearForecastHourTable()
+
 
 }
 
