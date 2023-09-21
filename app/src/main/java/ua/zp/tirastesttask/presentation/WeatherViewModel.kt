@@ -31,15 +31,22 @@ class WeatherViewModel @Inject constructor(
         val location = locationTracker.getCurrentLocation()
         if (location != null) {
             val locationString = "${location.latitude},${location.longitude}"
-
-            val currentWeatherResult = repository.getCurrentWeatherDay(Config.API_KEY, locationString)
-            _currentWeather.value = currentWeatherResult
-
-            val forecastResult = repository.getForecast(Config.API_KEY, locationString, 3)
-            _forecast.value = forecastResult
+            fetchWeather(locationString)
         } else {
             _currentWeather.value = Result.failure(Exception("Unable to get location"))
             _forecast.value = Result.failure(Exception("Unable to get location"))
         }
+    }
+
+    fun fetchWeatherForCity(cityName: String) = viewModelScope.launch {
+        fetchWeather(cityName)
+    }
+
+    private suspend fun fetchWeather(location: String) {
+        val currentWeatherResult = repository.getCurrentWeatherDay(Config.API_KEY, location)
+        _currentWeather.value = currentWeatherResult
+
+        val forecastResult = repository.getForecast(Config.API_KEY, location, 3)
+        _forecast.value = forecastResult
     }
 }

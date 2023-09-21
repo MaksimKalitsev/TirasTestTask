@@ -1,6 +1,7 @@
 package ua.zp.tirastesttask
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +42,8 @@ class MainActivity : ComponentActivity() {
     private val viewModel: WeatherViewModel by viewModels()
 
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         permissionLauncher = registerForActivityResult(
@@ -64,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TirasTestTaskTheme {
-                Navigation()
+                    Navigation()
             }
         }
     }
