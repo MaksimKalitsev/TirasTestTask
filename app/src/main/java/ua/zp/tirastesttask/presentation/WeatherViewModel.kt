@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.zp.tirastesttask.Config
@@ -21,12 +22,12 @@ class WeatherViewModel @Inject constructor(
     private val locationTracker: LocationTracker
 ) : ViewModel() {
 
-    private val _currentWeather = MutableLiveData<Result<WeatherData>>()
-    val currentWeather: LiveData<Result<WeatherData>> = _currentWeather
+    private val _currentWeather = MutableLiveData<WeatherData>()
+    val currentWeather: LiveData<WeatherData> = _currentWeather
 
 
-    private val _forecast = MutableLiveData<Result<List<ForecastDayData>>>()
-    val forecast: LiveData<Result<List<ForecastDayData>>> = _forecast
+    private val _forecast = MutableLiveData<List<ForecastDayData>>()
+    val forecast: LiveData<List<ForecastDayData>> = _forecast
 
 
     fun fetchWeatherForCurrentLocation() = viewModelScope.launch {
@@ -35,8 +36,7 @@ class WeatherViewModel @Inject constructor(
             val locationString = "${location.latitude},${location.longitude}"
             fetchWeather(locationString)
         } else {
-            _currentWeather.value = Result.failure(Exception("Unable to get location"))
-            _forecast.value = Result.failure(Exception("Unable to get location"))
+
         }
     }
 
@@ -46,42 +46,60 @@ class WeatherViewModel @Inject constructor(
 
     private fun fetchWeather(location: String) {
         viewModelScope.launch {
-            val apiWeather = withContext(Dispatchers.IO) {
-                repository.getCurrentWeatherDay(Config.API_KEY, location)
-            }
-            val apiForecast =
-                withContext(Dispatchers.IO) {
-                    repository.getForecast(Config.API_KEY, location, 3) }
 
-            if (apiWeather.isSuccess && apiForecast.isSuccess) {
-                _currentWeather.postValue(apiWeather)
-                _forecast.postValue(apiForecast)
+            val weatherDeferred =
+                async { repository.getCurrentWeatherDay(Config.API_KEY, location) }
+            val forecastDeferred = async { repository.getForecast(Config.API_KEY, location, 3) }
 
-                apiWeather.getOrNull()?.let {
-                    repository.insertWeatherData(it)
-                }
+            applyResults(weatherDeferred.await(), forecastDeferred.await())
+        }
+    }
 
-                apiForecast.getOrNull()?.let { forecastList ->
-                    forecastList.forEach { forecastDay ->
-                        repository.insertForecastDay(forecastDay)
-                        forecastDay.hour.forEach { forecastHourData ->
-                            repository.insertForecastHour(forecastHourData, forecastDay.date)
-                        }
-                    }
+    private suspend fun applyResults(
+        weatherResult: Result<WeatherData>,
+        forecastResult: Result<List<ForecastDayData>>
+    ) {
+        weatherResult.onSuccess { weather ->
+            _currentWeather.value = weather
+            insertWeather(weather)
+        }.onFailure {
+            getWeatherDb()
+        }
+        forecastResult.onSuccess { forecast ->
+            _forecast.value = forecast
+            insertForecast(forecast)
+        }.onFailure {
+            getForecastDb()
+        }
+    }
 
-                }
-            } else {
-                val dbWeatherData = repository.getAllWeatherData()
-                val dbForecastData = repository.getAllForecastDays()
+    private suspend fun getWeatherDb() = withContext(Dispatchers.IO) {
+        val dbWeatherData = repository.getAllWeatherData()
+        if (dbWeatherData.isNotEmpty()) {
+            _currentWeather.value = dbWeatherData.first()
+        }
+    }
 
-                if (dbWeatherData.isNotEmpty()) {
-                    _currentWeather.postValue(Result.success(dbWeatherData.first()))
-                }
 
-                if (dbForecastData.isNotEmpty()) {
-                    _forecast.postValue(Result.success(dbForecastData))
+    private suspend fun getForecastDb() = withContext(Dispatchers.IO) {
+        val dbForecastData = repository.getAllForecastDays()
+        if (dbForecastData.isNotEmpty()) {
+            _forecast.value = dbForecastData
+        }
+
+    }
+
+    private suspend fun insertWeather(weather: WeatherData) = withContext(Dispatchers.IO) {
+        repository.insertWeatherData(weather)
+    }
+
+    private suspend fun insertForecast(forecast: List<ForecastDayData>) =
+        withContext(Dispatchers.IO) {
+            forecast.forEach { forecastDay ->
+                repository.insertForecastDay(forecastDay)
+                forecastDay.hour.forEach { forecastHourData ->
+                    repository.insertForecastHour(forecastHourData, forecastDay.date)
                 }
             }
         }
-    }
 }

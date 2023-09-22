@@ -23,7 +23,7 @@ fun Navigation() {
         }
         composable(Screen.DetailsScreen.route) {navBackStackEntry ->
             val dataKey = navBackStackEntry.arguments?.getString("dataKey")
-            val forecastHourData = viewModel.forecast.value?.getOrNull()?.find { it.date == dataKey }?.hour
+            val forecastHourData = viewModel.forecast.value?.find { it.date == dataKey }?.hour
             if (forecastHourData != null) {
                 DetailsScreen(forecastHourData = forecastHourData)
             }

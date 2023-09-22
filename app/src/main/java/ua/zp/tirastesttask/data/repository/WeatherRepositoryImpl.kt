@@ -1,6 +1,6 @@
 package ua.zp.tirastesttask.data.repository
 
-import ua.zp.tirastesttask.data.db.ForecastHourEntity
+
 import ua.zp.tirastesttask.data.db.WeatherDao
 import ua.zp.tirastesttask.data.models.ForecastDayData
 import ua.zp.tirastesttask.data.models.ForecastHourData

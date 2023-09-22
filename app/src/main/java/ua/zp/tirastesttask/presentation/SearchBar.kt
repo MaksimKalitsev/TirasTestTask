@@ -3,6 +3,7 @@ package ua.zp.tirastesttask.presentation
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -32,7 +33,8 @@ fun SearchBar(onSearchCompleted: (String) -> Unit) {
 
     SearchBar(
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp),
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxWidth(),
         query = text,
         onQueryChange = { text = it },
         onSearch = {

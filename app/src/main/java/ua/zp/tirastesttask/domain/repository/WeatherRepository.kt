@@ -1,7 +1,5 @@
 package ua.zp.tirastesttask.domain.repository
 
-import ua.zp.tirastesttask.data.db.ForecastHourEntity
-import ua.zp.tirastesttask.data.db.WeatherDataEntity
 import ua.zp.tirastesttask.data.models.ForecastDayData
 import ua.zp.tirastesttask.data.models.ForecastHourData
 import ua.zp.tirastesttask.data.models.WeatherData
