@@ -76,16 +76,16 @@ class WeatherViewModel @Inject constructor(
     private suspend fun getWeatherDb() = withContext(Dispatchers.IO) {
         val dbWeatherData = repository.getAllWeatherData()
         if (dbWeatherData.isNotEmpty()) {
-            _currentWeather.value = dbWeatherData.first()
+            _currentWeather.postValue(dbWeatherData.first())
         }
     }
 
 
-    private suspend fun getForecastDb() = withContext(Dispatchers.IO) {
-        val dbForecastData = repository.getAllForecastDays()
-        if (dbForecastData.isNotEmpty()) {
-            _forecast.value = dbForecastData
-        }
+    private suspend fun getForecastDb() = withContext(Dispatchers.IO)  {
+            val dbForecastData = repository.getAllForecastDays()
+            if (dbForecastData.isNotEmpty()) {
+                _forecast.postValue(dbForecastData)
+            }
 
     }
 
