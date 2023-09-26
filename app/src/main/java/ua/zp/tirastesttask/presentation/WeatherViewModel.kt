@@ -49,7 +49,8 @@ class WeatherViewModel @Inject constructor(
 
             val weatherDeferred =
                 async { repository.getCurrentWeatherDay(Config.API_KEY, location) }
-            val forecastDeferred = async { repository.getForecast(Config.API_KEY, location, 3) }
+            val forecastDeferred =
+                async { repository.getForecast(Config.API_KEY, location, 3) }
 
             applyResults(weatherDeferred.await(), forecastDeferred.await())
         }
