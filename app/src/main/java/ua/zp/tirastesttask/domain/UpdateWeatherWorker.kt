@@ -1,4 +1,4 @@
-package ua.zp.tirastesttask
+package ua.zp.tirastesttask.domain
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -11,6 +11,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import ua.zp.tirastesttask.Config
+import ua.zp.tirastesttask.R
 import ua.zp.tirastesttask.domain.location.LocationTracker
 import ua.zp.tirastesttask.domain.repository.IWeatherRepository
 

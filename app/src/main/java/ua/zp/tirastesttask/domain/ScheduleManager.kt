@@ -1,12 +1,10 @@
 package ua.zp.tirastesttask.domain
 
-import android.app.NotificationManager
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import ua.zp.tirastesttask.UpdateWeatherWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

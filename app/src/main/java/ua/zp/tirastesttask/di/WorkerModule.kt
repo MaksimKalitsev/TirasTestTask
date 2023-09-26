@@ -12,7 +12,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ua.zp.tirastesttask.UpdateWeatherWorker
+import ua.zp.tirastesttask.domain.UpdateWeatherWorker
 import ua.zp.tirastesttask.domain.location.LocationTracker
 import ua.zp.tirastesttask.domain.repository.IWeatherRepository
 
