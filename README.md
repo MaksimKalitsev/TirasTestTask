@@ -22,6 +22,8 @@
 - Use of the Hilt library for dependency injection.
 - Room for working with an internal database.
 - Retrofit for making requests to the weather API.
+- WorkManager.
+- Notifications
 
   
 
