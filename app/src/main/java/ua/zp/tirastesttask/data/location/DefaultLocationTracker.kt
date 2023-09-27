@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,6 +35,7 @@ class DefaultLocationTracker @Inject constructor(
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if(!hasAccessCoarseLocationPermission || !hasAccessFineLocationPermission || !isGpsEnabled) {
+            Log.d("@@##", "GPS disabled or permission denied")
             return null
         }
 
@@ -51,6 +53,7 @@ class DefaultLocationTracker @Inject constructor(
                     cont.resume(it)
                 }
                 addOnFailureListener {
+                    it.printStackTrace()
                     cont.resume(null)
                 }
                 addOnCanceledListener {

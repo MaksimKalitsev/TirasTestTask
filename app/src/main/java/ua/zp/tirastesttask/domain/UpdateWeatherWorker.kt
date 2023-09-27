@@ -3,7 +3,6 @@ package ua.zp.tirastesttask.domain
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -25,21 +24,22 @@ class UpdateWeatherWorker @AssistedInject constructor(
     private val notificationManager: NotificationManager
 ) : CoroutineWorker(context, workerParams) {
 
+    companion object {
+        private const val WEATHER_CHANNEL = "weather_channel"
+    }
+
+    private val notificationBuilder = NotificationCompat.Builder(applicationContext, WEATHER_CHANNEL)
+        .setContentTitle("Weather Update")
+        .setContentText("Fetching weather data...")
+        .setSmallIcon(R.drawable.ic_drop)
+
     override suspend fun doWork(): Result {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("weather_channel", "Weather Updates", NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notificationBuilder = NotificationCompat.Builder(applicationContext, "weather_channel")
-            .setContentTitle("Weather Update")
-            .setContentText("Fetching weather data...")
-            .setSmallIcon(R.drawable.ic_drop)
-
+        val channel = NotificationChannel(WEATHER_CHANNEL, "Weather Updates", NotificationManager.IMPORTANCE_HIGH)
+        notificationManager.createNotificationChannel(channel)
         notificationManager.notify(1, notificationBuilder.build())
 
-        val location = locationTracker.getCurrentLocation() ?: return Result.failure()
+        val location = locationTracker.getCurrentLocation() ?: throw IllegalStateException("Unable to retrieve location")
         val locationString = "${location.latitude},${location.longitude}"
         return try {
             coroutineScope {
@@ -50,11 +50,14 @@ class UpdateWeatherWorker @AssistedInject constructor(
                 val forecastResult = forecastDeferred.await()
 
                 weatherResult.onSuccess { weather ->
+
                     repository.insertWeatherData(weather)
 
                     val updatedText = "Temperature: ${weather.temperature}°C, Location: $locationString"
                     notificationBuilder.setContentText(updatedText)
                     notificationManager.notify(1, notificationBuilder.build())
+                }.onFailure {
+                    failure(it)
                 }
 
                 forecastResult.onSuccess { forecast ->
@@ -64,18 +67,25 @@ class UpdateWeatherWorker @AssistedInject constructor(
                             repository.insertForecastHour(forecastHourData, forecastDay.date)
                         }
                     }
+                }.onFailure {
+                    failure(it)
                 }
             }
 
             Result.success()
         } catch (e: Exception) {
-
-            notificationBuilder.setContentText("Failed to fetch weather data")
-            notificationManager.notify(1, notificationBuilder.build())
-
-            e.printStackTrace()
-            Result.failure()
+            failure(e)
         }
+    }
+
+    private fun failure(
+        e: Throwable
+    ): Result {
+        notificationBuilder.setContentText("Failed to fetch weather data")
+        notificationManager.notify(1, notificationBuilder.build())
+
+        e.printStackTrace()
+        return Result.failure()
     }
 }
 
