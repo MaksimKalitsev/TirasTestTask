@@ -27,10 +27,8 @@ class UpdateWeatherWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("weather_channel", "Weather Updates", NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel("weather_channel", "Weather Updates", NotificationManager.IMPORTANCE_HIGH)
+        notificationManager.createNotificationChannel(channel)
 
         val notificationBuilder = NotificationCompat.Builder(applicationContext, "weather_channel")
             .setContentTitle("Weather Update")
