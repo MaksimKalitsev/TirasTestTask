@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -19,7 +20,7 @@ import kotlin.coroutines.resume
 class DefaultLocationTracker @Inject constructor(
     private val locationClient: FusedLocationProviderClient,
     private val application: Application
-): LocationTracker {
+) : LocationTracker {
 
     override suspend fun getCurrentLocation(): Location? {
         val hasAccessFineLocationPermission = ContextCompat.checkSelfPermission(
@@ -30,19 +31,29 @@ class DefaultLocationTracker @Inject constructor(
             application,
             Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+        val hasAccessBackgroundLocationPermission =
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                ContextCompat.checkSelfPermission(
+                    application,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true
+            }
 
-        val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if(!hasAccessCoarseLocationPermission || !hasAccessFineLocationPermission || !isGpsEnabled) {
-            Log.d("@@##", "GPS disabled or permission denied")
+        if (!hasAccessCoarseLocationPermission || !hasAccessFineLocationPermission || !isGpsEnabled || !hasAccessBackgroundLocationPermission) {
+            Log.d("LocationTracker", "Permissions or GPS are not properly set.")
             return null
         }
 
         return suspendCancellableCoroutine { cont ->
             locationClient.lastLocation.apply {
-                if(isComplete) {
-                    if(isSuccessful) {
+                if (isComplete) {
+                    if (isSuccessful) {
                         cont.resume(result)
                     } else {
                         cont.resume(null)
@@ -53,7 +64,6 @@ class DefaultLocationTracker @Inject constructor(
                     cont.resume(it)
                 }
                 addOnFailureListener {
-                    it.printStackTrace()
                     cont.resume(null)
                 }
                 addOnCanceledListener {

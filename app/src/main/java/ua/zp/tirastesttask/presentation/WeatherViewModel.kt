@@ -25,6 +25,7 @@ class WeatherViewModel @Inject constructor(
     private val _currentWeather = MutableLiveData<WeatherData>()
     val currentWeather: LiveData<WeatherData> = _currentWeather
 
+    private var firstRun: Boolean = true
 
     private val _forecast = MutableLiveData<List<ForecastDayData>>()
     val forecast: LiveData<List<ForecastDayData>> = _forecast
@@ -47,12 +48,20 @@ class WeatherViewModel @Inject constructor(
     private fun fetchWeather(location: String) {
         viewModelScope.launch {
 
-            val weatherDeferred =
-                async { repository.getCurrentWeatherDay(Config.API_KEY, location) }
-            val forecastDeferred =
-                async { repository.getForecast(Config.API_KEY, location, 3) }
+            if (firstRun) {
+                val weatherDeferred =
+                    async { repository.getCurrentWeatherDay(Config.API_KEY, location) }
+                val forecastDeferred =
+                    async { repository.getForecast(Config.API_KEY, location, 3) }
 
-            applyResults(weatherDeferred.await(), forecastDeferred.await())
+                applyResults(weatherDeferred.await(), forecastDeferred.await())
+                firstRun = false
+            } else {
+                getWeatherDb()
+                getForecastDb()
+            }
+
+
         }
     }
 
