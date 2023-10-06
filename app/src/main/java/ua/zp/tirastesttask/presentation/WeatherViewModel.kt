@@ -3,6 +3,7 @@ package ua.zp.tirastesttask.presentation
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ class WeatherViewModel @Inject constructor(
 
     private val _forecast = MutableLiveData<List<ForecastDayData>>()
     val forecast: LiveData<List<ForecastDayData>> = _forecast
+
 
 
     fun fetchWeatherForCurrentLocation() = viewModelScope.launch {
@@ -85,18 +87,26 @@ class WeatherViewModel @Inject constructor(
 
     private suspend fun getWeatherDb() = withContext(Dispatchers.IO) {
         val dbWeatherData = repository.getAllWeatherData()
-        if (dbWeatherData.isNotEmpty()) {
-            _currentWeather.postValue(dbWeatherData.first())
-        }
-    }
 
+         dbWeatherData.onSuccess {
+             val weatherData = dbWeatherData.getOrNull()
+             if (weatherData != null) {
+                 _currentWeather.value = (weatherData.first())
+             }
+        }.onFailure {
+
+         }
+    }
 
     private suspend fun getForecastDb() = withContext(Dispatchers.IO)  {
             val dbForecastData = repository.getAllForecastDays()
-            if (dbForecastData.isNotEmpty()) {
-                _forecast.postValue(dbForecastData)
-            }
 
+            dbForecastData.onSuccess {
+                val forecastData = dbForecastData.getOrNull()
+                _forecast.value = (forecastData)
+            }.onFailure {
+
+            }
     }
 
     private suspend fun insertWeather(weather: WeatherData) = withContext(Dispatchers.IO) {
