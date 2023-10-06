@@ -1,6 +1,8 @@
 package ua.zp.tirastesttask.data.repository
 
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import ua.zp.tirastesttask.data.db.WeatherDao
 import ua.zp.tirastesttask.data.models.ForecastDayData
 import ua.zp.tirastesttask.data.models.ForecastHourData
@@ -42,9 +44,12 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getAllWeatherData(): List<WeatherData> {
+    override suspend fun getAllWeatherData(): Result<List<WeatherData>> = try {
         val weatherDataEntities = weatherDao.getAllWeatherData()
-        return weatherDataEntities.map { it.toWeatherData() }
+        val mappedData = weatherDataEntities.map { it.toWeatherData() }
+        Result.success(mappedData)
+    } catch (ex: Exception) {
+        Result.failure(ex)
     }
 
     override suspend fun insertWeatherData(weatherData: WeatherData) {
@@ -52,12 +57,15 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherDao.insertWeatherData(weatherDataEntity)
     }
 
-    override suspend fun getAllForecastDays(): List<ForecastDayData> {
+    override suspend fun getAllForecastDays(): Result<List<ForecastDayData>> = try {
         val forecastDayEntities = weatherDao.getAllForecastDays()
-        return forecastDayEntities.map { forecastDayEntity ->
+        val mappedDays = forecastDayEntities.map { forecastDayEntity ->
             val forecastHourEntities = weatherDao.getForecastHoursForDay(forecastDayEntity.date)
-            forecastDayEntity.toForecastDay(forecastHourEntities )
+            forecastDayEntity.toForecastDay(forecastHourEntities)
         }
+        Result.success(mappedDays)
+    } catch (ex: Exception) {
+        Result.failure(ex)
     }
 
     override suspend fun insertForecastDay(forecastDay: ForecastDayData) {
@@ -65,9 +73,12 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherDao.insertForecastDay(forecastDayEntity)
     }
 
-    override suspend fun getAllForecastHours(): List<ForecastHourData> {
+    override suspend fun getAllForecastHours(): Result<List<ForecastHourData>> = try {
         val forecastHourEntities = weatherDao.getAllForecastHours()
-        return forecastHourEntities.map { it.toForecastHourData() }
+        val mappedHours = forecastHourEntities.map { it.toForecastHourData() }
+        Result.success(mappedHours)
+    } catch (ex: Exception) {
+        Result.failure(ex)
     }
 
     override suspend fun insertForecastHour(forecastHour: ForecastHourData, dayId: String) {
